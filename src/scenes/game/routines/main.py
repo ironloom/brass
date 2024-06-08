@@ -13,7 +13,7 @@ from brass import (
     inpt, 
     gui
 )
-from global_routines import (
+from src.global_routines import (
     menus,
     enemies,
     sounds,

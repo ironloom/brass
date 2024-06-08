@@ -142,8 +142,11 @@ def main(args):
 
     # Need to serialise these, so that the game can use the files
     # Mostly auto import
+    print("[Task : Removing wrapped]")
+    deps.delete_files_in_directory(conf.BASE_PATH)
+    
     b64encoder.serialise()
-    return
+    # return
     import_generator.serialise_imports()
 
     build_count_res = attempt(update_read_build_counter, ())
@@ -178,9 +181,9 @@ def main(args):
     if args[1] in ["--run", "-r"]:
         printf.title(f"Run")
         # os.system(f"python {main_file_dir}")
-        pth = os.path.join(conf.MAIN_FILE_DIR)
+        pth = os.path.join(*conf.MAIN_FILE_PATH)
         # print(pth)
-        deps.run_python_command(("-m", pth))
+        deps.run_python_command((pth,))
         return
 
     if args[1] in ["--build", "-b"]:

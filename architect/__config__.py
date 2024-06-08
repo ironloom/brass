@@ -15,24 +15,26 @@ DEPENDENCIES = [
 
 # For architect to run the correct __main__.py file
 MAIN_FILE_DIR = "brass"
+MAIN_FILE_NAME = PROJECT_NAME.lower() + ".py"
 BUILD_OUTPUT_DIR = ["dist"]
 TEMPLATE_FILES_DIR = ["architect", "templates"]
 
-BASE_PATH = ["dist", "temp"]
+BASE_PATH = ["dist", "wrapped", "brass"]
+MAIN_FILE_PATH = ["dist", "wrapped", MAIN_FILE_NAME]
 
 # Used to store the output of b64encoder.py and import_generator.py
-SERIALISED_OUTPUT_DIR = [*BASE_PATH, "brass", "temp", "rtns"]
+SERIALISED_OUTPUT_DIR = [*BASE_PATH, "temp"]
 
 # Used for the b64 images and sounds
 ASSETS_DIR_PATH = ["src", "assets"]
-ASSETS_FILE_DIST_PATH = [*BASE_PATH, "brass", "temp", "b64_asset_ref_table.py"]
+ASSETS_FILE_DIST_PATH = [*SERIALISED_OUTPUT_DIR, "b64_asset_ref_table.py"]
 
 # Used to generate script imports
-ROUTINE_PATH = [*BASE_PATH, "brass", "temp", "rtns"]
+ROUTINE_PATH = [*SERIALISED_OUTPUT_DIR, "rtns"]
 SCENES_PATH = ["src", "scenes"]
 SCENES_ENUM_FILE = ["brass", "enums", "scenes.py"]
 GLOBAL_ROUTINES_DIR_PATH = ["src", "global_routines"]
-GLOBAL_ROUTINES_DIR_DIST_PATH = [*BASE_PATH, "brass", "temp_global"]
+GLOBAL_ROUTINES_DIR_DIST_PATH = [*BASE_PATH, "temp_global"]
 
 
 class ROUTINE_EVENTS:
@@ -42,5 +44,5 @@ class ROUTINE_EVENTS:
     update = "def update("
 
 
-TEMP_DIR_PATH = [*BASE_PATH, "brass", "temp", "rtns"]
-ROUTINE_IMPORT_FILE_PATH = [*BASE_PATH, "brass", "temp", "rtns", "__init__.py"]
+TEMP_DIR_PATH = [*SERIALISED_OUTPUT_DIR, "rtns"]
+ROUTINE_IMPORT_FILE_PATH = [*SERIALISED_OUTPUT_DIR, "rtns", "__init__.py"]

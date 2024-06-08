@@ -56,17 +56,18 @@ def use(filename: string, T_type: Optional[UT] = None) -> UT:
 def create_runtime_objects(ratio: int = 1):
     for filename, b64_value in b64_ref_table.items():
 
-        if (
-            not filename.endswith(".mp3")
-            or not filename.endswith(".wav")
-            or not filename.endswith(".png")
-            or not filename.endswith(".ttf")
-        ):
-            unreachable(
-                f"Invalid file type: " + "." + filename.split(".")[1]
-                if "." in filename
-                else filename
-            )
+        # if (
+        #     not filename.endswith(".mp3")
+        #     or not filename.endswith(".wav")
+        #     or not filename.endswith(".png")
+        #     or not filename.endswith(".ttf")
+        # ):
+            
+        #     unreachable(
+        #         f"Invalid file type: " + "'." + filename.split(".")[1] + "'"
+        #         if "." in filename
+        #         else filename
+        #     )
 
         if not filename.endswith(".ttf"):
             ASSETS[filename] = load(filename, b64_value)

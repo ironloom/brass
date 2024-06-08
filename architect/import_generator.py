@@ -1,5 +1,6 @@
 # pylint: disable = deprecated-module
 from distutils.dir_util import copy_tree
+
 # pylint: enable = deprecated-module
 
 from result import Result, Ok, Err
@@ -23,22 +24,6 @@ class Routine:
     path_str: str
 
 
-@task("Delete Files")
-def delete_files_in_directory(directory_path):
-    try:
-        files = os.listdir(directory_path)
-        for index, filename in enumerate(files):
-            file_path = os.path.join(directory_path, filename)
-
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-            
-            progress_bar(index + 1, len(files), shorten(filename))
-        task_complete()
-    except OSError as e:
-        print("Error occurred while deleting files: \n", e)
-
-
 @task("Generating Imports")
 def generate_imports_from_directory(directory: str) -> Result[list[str], ValueError]:
 
@@ -50,12 +35,21 @@ def generate_imports_from_directory(directory: str) -> Result[list[str], ValueEr
         if not filename.endswith(".py"):
             continue
 
+        # file_list.append(
+        #     f"\nfrom {'.'.join(conf.ROUTINE_PATH[1:])} import "
+        #     + filename.replace(".py", "")
+        # )
+        if filename == "__init__.py":
+            continue 
+        
         file_list.append(
-            f"\nfrom {'.'.join(conf.ROUTINE_PATH[1:])} import "
+            f"\nfrom . import "
             + filename.replace(".py", "")
         )
 
         progress_bar((index + 1), top, shorten(filename))
+
+    file_list.append("\n")
 
     task_complete()
     return Ok(file_list)
@@ -159,16 +153,18 @@ def multiline_to_singleline_imports(python_code: str) -> str:
     return result
 
 
-def replace_imports(contents: str) -> str:
-    contents = contents.replace("from brass ", "")
-    contents = contents.replace("from brass.", "from ...")
-    contents = contents.replace("from global_routines ", "from temp_global ")
-    contents = contents.replace("from global_routines.", "from temp_global.")
+def replace_imports(contents: str, level: int = 3) -> str:
+    dots = '.' * level
+    contents = contents.replace("from brass ", f"from {dots} ")
+    contents = contents.replace("from brass.", f"from {dots}")
+    contents = contents.replace("from src.global_routines ", "from ...temp_global ")
+    contents = contents.replace("from src.global_routines.", "from ...temp_global.")
     contents = multiline_to_singleline_imports(contents)
     return contents
 
 
-def create_replace_temp(routines: list[Routine]) -> None:
+def create_replace_temp(routines: list[Routine], level: int = 3) -> None:
+    dots = '.' * level
     temp_path = os.path.join(*conf.TEMP_DIR_PATH)
 
     if not os.path.isdir(temp_path):
@@ -181,8 +177,8 @@ def create_replace_temp(routines: list[Routine]) -> None:
         with open(routine.path_str, "r", encoding="utf-8") as rf:
             contents = rf.read()
 
-        contents = "import events, scene\n" + contents
-        contents = "import enums\n" + contents
+        contents = f"from {dots} import events, scene\n" + contents
+        # contents = "import enums\n" + contents
         contents = contents.replace(
             conf.ROUTINE_EVENTS.spawn,
             f"@scene.spawn(enums.scenes.{routine.scene.upper()})\n{conf.ROUTINE_EVENTS.spawn}",
@@ -199,7 +195,7 @@ def create_replace_temp(routines: list[Routine]) -> None:
             conf.ROUTINE_EVENTS.update,
             f"@scene.update(enums.scenes.{routine.scene.upper()})\n{conf.ROUTINE_EVENTS.update}",
         )
-        contents = replace_imports(contents)
+        contents = replace_imports(contents, level)
 
         with open(
             os.path.join(
@@ -219,6 +215,7 @@ def create_replace_temp(routines: list[Routine]) -> None:
             encoding="utf-8",
         ) as wf:
             wf.write(contents)
+
 
 @task("Binding GLOBAL Routines")
 def build_global_routines() -> None:
@@ -248,10 +245,13 @@ def build_global_routines() -> None:
             encoding="utf-8",
         ) as rf:
             contents = rf.read()
-            
-        contents = contents.replace("from global_routines ", "from . ")   
-        contents = contents.replace("from global_routines.", "from .")   
-        contents = replace_imports(contents)
+
+        contents = contents.replace("from src.global_routines ", "from . ")
+        contents = contents.replace("from src.global_routines.", "from .")
+        # contents = contents.replace("from brass ", "from .. ")
+        # contents = contents.replace("from brass.", "from ..")
+        contents = replace_imports(contents, 2)
+
         with open(
             os.path.join(*conf.GLOBAL_ROUTINES_DIR_DIST_PATH, global_rtn),
             "w",
@@ -269,6 +269,38 @@ def serialise_imports():
     This is needed with the use event decorators, which - on load - bind functions to events.
     """
 
+    with open(
+        os.path.join(*conf.SERIALISED_OUTPUT_DIR, "__init__.py"), "w", encoding="utf-8"
+    ) as wf:
+        wf.write(
+            "\n".join(
+                [
+                    "from . import (",
+                    f"\t{conf.ASSETS_FILE_DIST_PATH[-1].replace('.py', '')},",
+                    f"\t{conf.ROUTINE_PATH[-1]}",
+                    ")\n",
+                ]
+            )
+        )
+
+    with open(
+        os.path.join(*conf.MAIN_FILE_PATH), "w", encoding="utf-8"
+    ) as wf:
+        wf.write(
+            "\n".join(
+                [
+                    "from brass import init\n",
+                    "if __name__ == '__main__':",
+                    "\tinit()\n",
+                ]
+            )
+        )
+
+    copy_tree(
+        os.path.join(conf.MAIN_FILE_DIR),
+        os.path.join(*conf.BASE_PATH),
+    )
+
     delete_files_in_directory(os.path.join(*conf.GLOBAL_ROUTINES_DIR_DIST_PATH))
     build_global_routines()
 
@@ -278,7 +310,7 @@ def serialise_imports():
     create_replace_temp(routines)
 
     with open(
-        os.path.join(*conf.SERIALISED_OUTPUT_DIR, conf.ROUTINE_IMPORT_FILE_PATH),
+        os.path.join(*conf.ROUTINE_IMPORT_FILE_PATH),
         "w",
         encoding="utf8",
     ) as wf:
@@ -305,4 +337,3 @@ def serialise_imports():
 
 if __name__ == "__main__":
     serialise_imports()
-    

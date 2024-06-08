@@ -43,8 +43,7 @@ def serialise() -> None:
         progress_bar(index + 1, len(assets), shorten(basename))
     task_complete()
 
-    if not os.path.isdir(os.path.join(*conf.ASSETS_FILE_DIST_PATH[:-1])):
-        os.mkdir(os.path.join(*conf.ASSETS_FILE_DIST_PATH[:-1]))
+    make_dir_walk(conf.ASSETS_FILE_DIST_PATH)
 
     with open(os.path.join(*conf.ASSETS_FILE_DIST_PATH), "w", encoding="utf-8") as wf:
         wf.write(f"REFERENCE_TABLE: dict[str, str] = {asset_dict}")
