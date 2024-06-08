@@ -16,7 +16,7 @@ DEPENDENCIES = [
 # For architect to run the correct __main__.py file
 MAIN_FILE_DIR = "brass"
 MAIN_FILE_NAME = PROJECT_NAME.lower() + ".py"
-BUILD_OUTPUT_DIR = ["dist"]
+BUILD_OUTPUT_DIR = ["dist", "build"]
 TEMPLATE_FILES_DIR = ["architect", "templates"]
 
 BASE_PATH = ["dist", "wrapped", "brass"]

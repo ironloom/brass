@@ -28,11 +28,11 @@ class Routine:
 def generate_imports_from_directory(directory: str) -> Result[list[str], ValueError]:
 
     # Get the list of files in the directory
-    top = len([x for x in os.listdir(directory) if x.endswith(".py")])
+    top = len([x for x in os.listdir(directory) if x.endswith(".py") and x != "__init__.py"])
     file_list: list[str] = []
 
     for index, filename in enumerate(os.listdir(directory)):
-        if not filename.endswith(".py"):
+        if not filename.endswith(".py") or filename == "__init__.py":
             continue
 
         # file_list.append(
@@ -40,6 +40,7 @@ def generate_imports_from_directory(directory: str) -> Result[list[str], ValueEr
         #     + filename.replace(".py", "")
         # )
         if filename == "__init__.py":
+            print("asdasd")
             continue 
         
         file_list.append(

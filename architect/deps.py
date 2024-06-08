@@ -25,7 +25,7 @@ def task(task_name: str):
 
 
 # @task("Delete Files")
-def delete_files_in_directory(directory_path: list[str]):
+def delete_files_in_directory(directory_path: list[str], display: bool = True):
     make_dir_walk(directory_path)
     directory_path = os.path.join(*directory_path)
     try:
@@ -36,11 +36,13 @@ def delete_files_in_directory(directory_path: list[str]):
             if os.path.isfile(file_path):
                 os.remove(file_path)
             if os.path.isdir(file_path):
-                delete_files_in_directory(file_path.split(os.sep))
+                delete_files_in_directory(file_path.split(os.sep), display=False)
                 os.rmdir(file_path)
 
-            progress_bar(index + 1, len(files), shorten(filename))
-        task_complete()
+            if display:
+                progress_bar(index + 1, len(files), shorten(filename))
+        if display:
+            task_complete()
     except OSError as e:
         print("Error occurred while deleting files: \n", e)
 
