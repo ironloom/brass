@@ -13,6 +13,7 @@ from deps import *
 import __config__ as conf
 import os
 import re
+import shutil
 
 
 @dataclass
@@ -24,11 +25,38 @@ class Routine:
     path_str: str
 
 
+def copy_directory(src, dst):
+    """
+    Recursively copy all contents from src directory to dst directory.
+
+    Parameters:
+    src (str): Source directory path.
+    dst (str): Destination directory path.
+    """
+    # Create the destination directory if it does not exist
+    if not os.path.exists(dst):
+        os.makedirs(dst)
+
+    # Loop over all items in the source directory
+    for item in os.listdir(src):
+        src_path = os.path.join(src, item)
+        dst_path = os.path.join(dst, item)
+
+        # If the item is a directory, recursively copy its contents
+        if os.path.isdir(src_path):
+            copy_directory(src_path, dst_path)
+        # If the item is a file, copy it to the destination directory
+        else:
+            shutil.copy2(src_path, dst_path)
+
+
 @task("Generating Imports")
 def generate_imports_from_directory(directory: str) -> Result[list[str], ValueError]:
 
     # Get the list of files in the directory
-    top = len([x for x in os.listdir(directory) if x.endswith(".py") and x != "__init__.py"])
+    top = len(
+        [x for x in os.listdir(directory) if x.endswith(".py") and x != "__init__.py"]
+    )
     file_list: list[str] = []
 
     for index, filename in enumerate(os.listdir(directory)):
@@ -41,12 +69,9 @@ def generate_imports_from_directory(directory: str) -> Result[list[str], ValueEr
         # )
         if filename == "__init__.py":
             print("asdasd")
-            continue 
-        
-        file_list.append(
-            f"\nfrom . import "
-            + filename.replace(".py", "")
-        )
+            continue
+
+        file_list.append(f"\nfrom . import " + filename.replace(".py", ""))
 
         progress_bar((index + 1), top, shorten(filename))
 
@@ -155,21 +180,23 @@ def multiline_to_singleline_imports(python_code: str) -> str:
 
 
 def replace_imports(contents: str, level: int = 3) -> str:
-    dots = '.' * level
+    dots = "." * level
     contents = contents.replace("from brass ", f"from {dots} ")
     contents = contents.replace("from brass.", f"from {dots}")
     contents = contents.replace("from src.global_routines ", "from ...temp_global ")
     contents = contents.replace("from src.global_routines.", "from ...temp_global.")
     contents = contents.replace("from ..enums ", f"from {dots}temp_enums ")
     contents = contents.replace("from ..enums.", f"from {dots}temp_enums.")
-    contents = contents.replace("from src import enums", f"from {dots} import temp_enums as enums")
+    contents = contents.replace(
+        "from src import enums", f"from {dots} import temp_enums as enums"
+    )
     contents = contents.replace("from src.enums ", f"from {dots}temp_enums ")
     contents = multiline_to_singleline_imports(contents)
     return contents
 
 
 def create_replace_temp(routines: list[Routine], level: int = 3) -> None:
-    dots = '.' * level
+    dots = "." * level
     temp_path = os.path.join(*conf.TEMP_DIR_PATH)
 
     if not os.path.isdir(temp_path):
@@ -296,9 +323,7 @@ def serialise_imports():
             )
         )
 
-    with open(
-        os.path.join(*conf.MAIN_FILE_PATH), "w", encoding="utf-8"
-    ) as wf:
+    with open(os.path.join(*conf.MAIN_FILE_PATH), "w", encoding="utf-8") as wf:
         wf.write(
             "\n".join(
                 [
@@ -309,10 +334,12 @@ def serialise_imports():
             )
         )
 
-    copy_tree(
-        os.path.join(conf.MAIN_FILE_DIR),
-        os.path.join(*conf.BASE_PATH),
-    )
+    copy_directory(conf.MAIN_FILE_DIR, os.path.join(*conf.BASE_PATH))
+
+    # copy_tree(
+    #     os.path.join(conf.MAIN_FILE_DIR),
+    #     os.path.join(*conf.BASE_PATH),
+    # )
 
     delete_files_in_directory(os.path.join(*conf.GLOBAL_ROUTINES_DIR_DIST_PATH))
     build_global_routines()
