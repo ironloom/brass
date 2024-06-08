@@ -1,8 +1,9 @@
 from brass.base import *
 from brass.gui import *
 
-from brass import items, timeout, scene, enums, gui, saves
+from brass import items, timeout, scene, gui, saves, enums
 from . import menus, round_manager
+from ..enums import spell_enum
 
 import random
 
@@ -278,15 +279,15 @@ def set_string_map() -> None:
     STRING_MAP["%w1"] = "Boxkesztyű"
 
     # %s - Spell Level
-    # STRING_MAP["%s.lvl.haste"] = enums.spells.HASTE.effectiveness
-    # STRING_MAP["%s.lvl.healing"] = enums.spells.HEALING.effectiveness
-    # STRING_MAP["%s.lvl.goliath"] = enums.spells.GOLIATH.effectiveness
-    # STRING_MAP["%s.lvl.zzzz"] = enums.spells.Zzzz.effectiveness
+    # STRING_MAP["%s.lvl.haste"] = spells.HASTE.effectiveness
+    # STRING_MAP["%s.lvl.healing"] = spells.HEALING.effectiveness
+    # STRING_MAP["%s.lvl.goliath"] = spells.GOLIATH.effectiveness
+    # STRING_MAP["%s.lvl.zzzz"] = spells.Zzzz.effectiveness
     # # |> Spell id
-    # STRING_MAP["%s.id.haste"] = enums.spells.HASTE.name
-    # STRING_MAP["%s.id.healing"] = enums.spells.HEALING.name
-    # STRING_MAP["%s.id.goliath"] = enums.spells.GOLIATH.name
-    # STRING_MAP["%s.id.zzzz"] = enums.spells.Zzzz.name
+    # STRING_MAP["%s.id.haste"] = spells.HASTE.name
+    # STRING_MAP["%s.id.healing"] = spells.HEALING.name
+    # STRING_MAP["%s.id.goliath"] = spells.GOLIATH.name
+    # STRING_MAP["%s.id.zzzz"] = spells.Zzzz.name
 
 
 @scene.awake(enums.scenes.GAME)
@@ -526,11 +527,11 @@ def show_boon_selection_menu() -> None:
         "Ezt cseréli: %p.s1 (1)",
     ],
     "banana.png",
-    "g:s1:" + enums.spells.Zzzz.name,
+    "g:s1:" + spell_enum.Zzzz.name,
 )
 def _() -> None:
-    enums.spells.Zzzz.effectiveness = 1
-    player.spells[1] = enums.spells.Zzzz
+    spell_enum.Zzzz.effectiveness = 1
+    player.spells[1] = spell_enum.Zzzz
 
 
 @mk_boon(
@@ -543,11 +544,11 @@ def _() -> None:
         "Ezt cseréli: %p.s0 (0)",
     ],
     "banana.png",
-    "g:s0:" + enums.spells.HEALING.name,
+    "g:s0:" + spell_enum.HEALING.name,
 )
 def _() -> None:
-    enums.spells.HEALING.effectiveness = 5
-    player.spells[0] = enums.spells.HEALING
+    spell_enum.HEALING.effectiveness = 5
+    player.spells[0] = spell_enum.HEALING
 
 
 @mk_boon(
@@ -556,11 +557,11 @@ def _() -> None:
     "Kreatin",
     ["Nagyobb méret és több életerő", "15 másodpercig.", "Ezt cseréli: %p.s0 (0)"],
     "banana.png",
-    "g:s0:" + enums.spells.GOLIATH.name,
+    "g:s0:" + spell_enum.GOLIATH.name,
 )
 def grant_goliath() -> None:
-    enums.spells.GOLIATH.effectiveness = 1.25
-    player.spells[0] = enums.spells.GOLIATH
+    spell_enum.GOLIATH.effectiveness = 1.25
+    player.spells[0] = spell_enum.GOLIATH
 
 
 @mk_boon(
@@ -591,11 +592,11 @@ def _() -> None:
         # "Alapvető hatékonyság: 6"
     ],
     "banana.png",
-    "g:s1:" + enums.spells.HASTE.name,
+    "g:s1:" + spell_enum.HASTE.name,
 )
 def _() -> None:
-    enums.spells.HASTE.effectiveness = 6
-    player.spells[1] = enums.spells.HASTE
+    spell_enum.HASTE.effectiveness = 6
+    player.spells[1] = spell_enum.HASTE
 
 
 @mk_boon(
@@ -608,11 +609,11 @@ def _() -> None:
         "Ezt cseréli: %p.s1 (1)",
     ],
     "banana.png",
-    "g:s1:" + enums.spells.Zzzz.name,
+    "g:s1:" + spell_enum.Zzzz.name,
 )
 def _() -> None:
-    enums.spells.Zzzz.effectiveness = 2
-    player.spells[1] = enums.spells.Zzzz
+    spell_enum.Zzzz.effectiveness = 2
+    player.spells[1] = spell_enum.Zzzz
 
 
 @mk_boon(
@@ -625,11 +626,11 @@ def _() -> None:
         "Ezt cseréli: %p.s0 (0)",
     ],
     "banana.png",
-    "g:s0:" + enums.spells.HEALING.name,
+    "g:s0:" + spell_enum.HEALING.name,
 )
 def _() -> None:
-    enums.spells.HEALING.effectiveness = 10
-    player.spells[0] = enums.spells.HEALING
+    spell_enum.HEALING.effectiveness = 10
+    player.spells[0] = spell_enum.HEALING
 
 
 @mk_boon(
@@ -638,11 +639,11 @@ def _() -> None:
     "Kreatin x2",
     ["Nagyobb méret és több életerő", "15 másodpercig.", "Ezt cseréli: %p.s0 (0)"],
     "banana.png",
-    "g:s0:" + enums.spells.GOLIATH.name,
+    "g:s0:" + spell_enum.GOLIATH.name,
 )
 def _() -> None:
-    enums.spells.GOLIATH.effectiveness = 2.5
-    player.spells[0] = enums.spells.GOLIATH
+    spell_enum.GOLIATH.effectiveness = 2.5
+    player.spells[0] = spell_enum.GOLIATH
 
 
 @mk_boon(
@@ -687,11 +688,11 @@ def _() -> None:
         # "Alapvető hatékonyság: 6"
     ],
     "banana.png",
-    "g:s1:" + enums.spells.HASTE.name,
+    "g:s1:" + spell_enum.HASTE.name,
 )
 def _() -> None:
-    enums.spells.HASTE.effectiveness = 9
-    player.spells[1] = enums.spells.HASTE
+    spell_enum.HASTE.effectiveness = 9
+    player.spells[1] = spell_enum.HASTE
 
 
 @mk_boon(
@@ -704,11 +705,11 @@ def _() -> None:
         "Ezt cseréli: %p.s1 (1)",
     ],
     "banana.png",
-    "g:s1:" + enums.spells.Zzzz.name,
+    "g:s1:" + spell_enum.Zzzz.name,
 )
 def _() -> None:
-    enums.spells.Zzzz.effectiveness = 4
-    player.spells[1] = enums.spells.Zzzz
+    spell_enum.Zzzz.effectiveness = 4
+    player.spells[1] = spell_enum.Zzzz
 
 
 @mk_boon(
@@ -721,11 +722,11 @@ def _() -> None:
         "Ezt cseréli: %p.s0 (0)",
     ],
     "banana.png",
-    "g:s0:" + enums.spells.HEALING.name,
+    "g:s0:" + spell_enum.HEALING.name,
 )
 def _() -> None:
-    enums.spells.HEALING.effectiveness = 25
-    player.spells[0] = enums.spells.HEALING
+    spell_enum.HEALING.effectiveness = 25
+    player.spells[0] = spell_enum.HEALING
 
 
 @mk_boon(
@@ -734,11 +735,11 @@ def _() -> None:
     "Kreatin x3",
     ["Nagyobb méret és több életerő", "15 másodpercig.", "Ezt cseréli: %p.s0 (0)"],
     "banana.png",
-    "g:s0:" + enums.spells.GOLIATH.name,
+    "g:s0:" + spell_enum.GOLIATH.name,
 )
 def _() -> None:
-    enums.spells.GOLIATH.effectiveness = 5
-    player.spells[0] = enums.spells.GOLIATH
+    spell_enum.GOLIATH.effectiveness = 5
+    player.spells[0] = spell_enum.GOLIATH
 
 
 @mk_boon(

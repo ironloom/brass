@@ -160,6 +160,10 @@ def replace_imports(contents: str, level: int = 3) -> str:
     contents = contents.replace("from brass.", f"from {dots}")
     contents = contents.replace("from src.global_routines ", "from ...temp_global ")
     contents = contents.replace("from src.global_routines.", "from ...temp_global.")
+    contents = contents.replace("from ..enums ", f"from {dots}temp_enums ")
+    contents = contents.replace("from ..enums.", f"from {dots}temp_enums.")
+    contents = contents.replace("from src import enums", f"from {dots} import temp_enums as enums")
+    contents = contents.replace("from src.enums ", f"from {dots}temp_enums ")
     contents = multiline_to_singleline_imports(contents)
     return contents
 
@@ -220,6 +224,11 @@ def create_replace_temp(routines: list[Routine], level: int = 3) -> None:
 
 @task("Binding GLOBAL Routines")
 def build_global_routines() -> None:
+
+    copy_tree(
+        os.path.join(*conf.PROJ_ENUMS_DIR_PATH),
+        os.path.join(*conf.PROJ_ENUMS_DIR_DIST_PATH),
+    )
 
     copy_tree(
         os.path.join(*conf.GLOBAL_ROUTINES_DIR_PATH),

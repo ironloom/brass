@@ -61,10 +61,10 @@ def init():
     inpt.init_controllers()
 
     inpt.bind_buttons(
-        enums.keybinds.SHOW_PAUSE_MENU, [{"escape"}, {"start@ctrl#0"}], "down"
+        enums.base_keybinds.SHOW_PAUSE_MENU, [{"escape"}, {"start@ctrl#0"}], "down"
     )
-    inpt.bind_buttons(enums.keybinds.ACCEPT_MENU, [{"enter"}, {"a@ctrl#0"}], "down")
-    inpt.bind_buttons(enums.keybinds.BACK, [{"escape"}, {"b@ctrl#0"}], "down")
+    inpt.bind_buttons(enums.base_keybinds.ACCEPT_MENU, [{"enter"}, {"a@ctrl#0"}], "down")
+    inpt.bind_buttons(enums.base_keybinds.BACK, [{"escape"}, {"b@ctrl#0"}], "down")
     inpt.bind_buttons("exit", [{"left shift", "escape"}])
 
     events.call(events.IDS.awake)
@@ -97,7 +97,7 @@ def init():
 
         display.render()
 
-        if inpt.active_bind("exit"):
+        if inpt.active_bind("exit") and pgapi.SETTINGS.is_demo:
             saves.save()
             pgapi.end()
 
@@ -108,3 +108,4 @@ def init():
     pygame.quit()
     # pylint: enable=no-member
     # saves.save()
+    

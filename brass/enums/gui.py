@@ -13,6 +13,7 @@ class FONTS:
     DEFAULT: str = "inter.ttf"
     INTER: str = "inter.ttf"
     PRESS_PLAY: str = "press_play.ttf"
+    JETBRAINSMONO: str = "JetBrainsMono.ttf"
 
 
 class COLOURS:

@@ -33,9 +33,12 @@ ASSETS_FILE_DIST_PATH = [*SERIALISED_OUTPUT_DIR, "b64_asset_ref_table.py"]
 ROUTINE_PATH = [*SERIALISED_OUTPUT_DIR, "rtns"]
 SCENES_PATH = ["src", "scenes"]
 SCENES_ENUM_FILE = ["brass", "enums", "scenes.py"]
+
 GLOBAL_ROUTINES_DIR_PATH = ["src", "global_routines"]
 GLOBAL_ROUTINES_DIR_DIST_PATH = [*BASE_PATH, "temp_global"]
 
+PROJ_ENUMS_DIR_PATH = ["src", "enums"]
+PROJ_ENUMS_DIR_DIST_PATH = [*BASE_PATH, "temp_enums"]
 
 class ROUTINE_EVENTS:
     spawn = "def spawn("

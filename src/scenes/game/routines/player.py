@@ -11,6 +11,7 @@ from src.global_routines import (
     interact,
     round_manager
 )
+from src.enums import keybinds
 
 from brass import (
     vectormath, 
@@ -20,9 +21,9 @@ from brass import (
     assets,
     audio,
     scene,
-    enums, 
     items, 
-    pgapi, 
+    pgapi,
+    enums, 
     inpt, 
     gui
 )
@@ -118,6 +119,7 @@ def init() -> None:
     global dash_display
     global hitpoint_display
     global mana_display
+    global walk_sound
     global player_plates_attack_anim
     global player_gloves_attack_anim
     global hp_amount_display
@@ -272,12 +274,12 @@ def init() -> None:
     player.dashes_remaining = player.dash_count
     player.last_dash_charge_refill = pgapi.TIME.current
 
-    if player.hitpoints is not None:
+    if player.hitpoints is None:
         player.hitpoints = player.max_hitpoints
-    if player.mana is not None:
+    if player.mana == None:
         player.mana = player.max_mana
 
-    if player.slowed_by_percent is not None:
+    if player.slowed_by_percent == None:
         player.slowed_by_percent = 0
 
     default_attack_speed = player.base_attack_speed
@@ -293,7 +295,7 @@ def init() -> None:
 
     empty_spell = Spell("Üres", "Üres képesség hely.", 0, 0, 0, "empty_icon.png", [])
 
-    if player.spells is None:
+    if player.spells == None:
         player.spells = [empty_spell, structured_clone(empty_spell)]
         # player.spells = [enums.spells.HEALING, enums.spells.Zzzz]
     elif len(player.spells) < 2:
@@ -312,34 +314,44 @@ def init() -> None:
 
 
 def update() -> None:
+    global player_plates_attack_anim
+    global player_gloves_attack_anim
+    global hitpoint_display
+    global player_can_move_save
+    global mana_display
+    global hp_amount_display
+    global default_attack_speed
     global can_attack
     global can_dash
+    global weapons_swap_display
+    global spell0_icon_display
+    global spell1_icon_display
 
     weapon_display_0.sprite = f"{player.weapon.id}_0.png"
     weapon_display_1.sprite = f"{player.weapon.id}_1.png"
 
-    if inpt.active_bind(enums.keybinds.SPELLS.SPELL1) and player.spells[0] is not None:
-        spells.cast(player.spells[0], player)
+    if inpt.active_bind(keybinds.SPELLS.SPELL1) and player.spells[0] != None:
+        spells.fire(player.spells[0], player)
 
-    if inpt.active_bind(enums.keybinds.SPELLS.SPELL2) and player.spells[1] is not None:
-        spells.cast(player.spells[1], player)
+    if inpt.active_bind(keybinds.SPELLS.SPELL2) and player.spells[1] != None:
+        spells.fire(player.spells[1], player)
 
     if collision.collides(player.transform, round_manager.MIXER_TRANSFORM):
         if round_manager.ROUND_STATE == "BoonSelection":
             interact.show("Mixer", 10000)
-            if inpt.active_bind(enums.keybinds.INTERACT):
+            if inpt.active_bind(keybinds.INTERACT):
                 boons.show_boon_menu()
     else:
         interact.hide(10000)
 
     if round_manager.ROUND_STATE == "Wait":
         interact.show("Következő kör", 10000)
-        if inpt.active_bind(enums.keybinds.INTERACT):
+        if inpt.active_bind(keybinds.INTERACT):
             round_manager.start_round()
             round_manager.ROUND_STATE = "Fight"
             interact.hide(10000)
 
-    if inpt.active_bind(enums.keybinds.PLAYER_WEAPON_SWITCH):
+    if inpt.active_bind(keybinds.PLAYER_WEAPON_SWITCH):
         if player.weapon.id == player.weapons[0].id:
             player.weapon = player.weapons[1]
             player.base_attack_speed = default_attack_speed
@@ -373,8 +385,8 @@ def update() -> None:
             else player_plates_attack_anim
         )
 
-        light_attacking = inpt.active_bind(enums.keybinds.PLAYER_LIGHT_ATTACK)
-        heavy_attacking = inpt.active_bind(enums.keybinds.PLAYER_HEAVY_ATTACK)
+        light_attacking = inpt.active_bind(keybinds.PLAYER_LIGHT_ATTACK)
+        heavy_attacking = inpt.active_bind(keybinds.PLAYER_HEAVY_ATTACK)
 
         if light_attacking and player.dashing and can_attack:
             animator.play(attack_anim)
@@ -476,13 +488,13 @@ def update() -> None:
     spell1_cond = True
 
 
-    if player.spells[0].cooldown_start is not None:
+    if player.spells[0].cooldown_start != None:
         spell0_cond = False
         t = f"{round(player.spells[0].cooldown_start + player.spells[0].cooldown - pgapi.TIME.current)}s"
         spell0_icon_display.children[0].children[0] = t
         spell0_icon_display.children[0].style.left = f"{32 - len(t) * 12 / 2}x"
 
-    if player.spells[1].cooldown_start is not None:
+    if player.spells[1].cooldown_start != None:
         spell1_cond = False
         t = f"{round(player.spells[1].cooldown_start + player.spells[1].cooldown - pgapi.TIME.current)}s"
         spell1_icon_display.children[0].children[0] = t
@@ -533,6 +545,8 @@ def allow_attack() -> None:
 
 def move_player() -> None:
     global can_dash
+    global player_walk_left_anim
+    global player_walk_right_anim
 
     # global dash_display
     # global player_hand_holder
@@ -570,7 +584,7 @@ def move_player() -> None:
     #     audio.fade_out(walk_sound, 100)
 
     if (
-        inpt.active_bind(enums.keybinds.PLAYER_DASH)
+        inpt.active_bind(keybinds.PLAYER_DASH)
         and player.dashes_remaining > 0
         and (move_math_vec.end.x != 0 or move_math_vec.end.y != 0)
         and (player.can_move or can_dash)
