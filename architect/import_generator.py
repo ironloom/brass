@@ -225,6 +225,9 @@ def create_replace_temp(routines: list[Routine], level: int = 3) -> None:
 @task("Binding GLOBAL Routines")
 def build_global_routines() -> None:
 
+    make_dir_walk(conf.PROJ_ENUMS_DIR_DIST_PATH)
+    make_dir_walk(conf.GLOBAL_ROUTINES_DIR_DIST_PATH)
+
     copy_tree(
         os.path.join(*conf.PROJ_ENUMS_DIR_PATH),
         os.path.join(*conf.PROJ_ENUMS_DIR_DIST_PATH),
