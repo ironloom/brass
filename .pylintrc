@@ -26,7 +26,8 @@ disable =
     no-self-argument,
     ungrouped-imports,
     line-too-long,
-    too-many-lines
+    too-many-lines,
+    too-many-arguments
 
 [VARIABLES]
 
